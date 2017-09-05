@@ -11,7 +11,7 @@ var {User} = require('./models/user.js');
 
 var app = express();
 // heroku
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
@@ -23,7 +23,7 @@ app.post('/todos', (req, res) => {3
     res.status(201).send(doc);
   },(e) => {
     res.status(400).send(e);
-  })
+  });
 });
 
 app.get('/todos', (req,res) => {
@@ -80,6 +80,17 @@ app.put('/todos/:id',(req,res) => {
     }
     res.send({todo});
   }).catch((e) => res.status(400).send());
+});
+
+app.post('/users',(req,res) => {
+  var user = new User(_.pick(req.body,['email','password']));
+  user.save().then((user) => {
+      return user.generateAuthToken();
+    }).then((token) => {
+      res.status(201).header('x-auth', token).send(user);
+    }).catch((e) => {
+    res.status(400).send(e);
+    });
 });
 
 app.listen(port, () => {
