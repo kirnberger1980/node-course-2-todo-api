@@ -222,11 +222,11 @@ describe('POST /users', () => {
   });
 
   it('should not create user if email in use', (done) => {
-    var email = users[0].email;
-    var password = users[0].password;
     request(app)
       .post('/users')
-      .send({email, password})
+      .send({
+        email: users[0].email,
+        password: users[0].password})
       .expect(400)
       .end(done);
   });

@@ -97,7 +97,30 @@ app.post('/users',(req,res) => {
 
 app.get('/users/me', authenticate, (req,res) => {
   res.send(req.user);
-})
+});
+
+// POST /users/login {email, password}
+
+app.post('/users/login',(req, res) => {
+  var body = _.pick(req.body,['email','password']);
+  User.findByCredentials(body.email, body.password).then((user) =>  {
+    return user.generateAuthToken().then((token) => {
+      res.header('x-auth',token).send({user});
+    });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+  // var email = req.body.email;
+  // var password = req.body.password;
+  // User.findOne({email}).then((user) => {
+  //   if (!user) {
+  //     return res.status(404).send();
+  //   }
+  //   res.header('x-auth',user.tokens[0].token).send({user});
+  // }).catch((e) => res.status(400).send());
+});
+
+
 
 app.listen(port, () => {
   console.log('Started on port',port);
