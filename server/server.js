@@ -120,7 +120,14 @@ app.post('/users/login',(req, res) => {
   // }).catch((e) => res.status(400).send());
 });
 
-
+app.delete('/users/me/token',authenticate, (req,res) => {
+  // req.token is set by authenticate method from the middleware
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }, (e) => {
+    res.status(400).send();
+  });
+});
 
 app.listen(port, () => {
   console.log('Started on port',port);
